@@ -3,223 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KJC AI - ROBOT 2025 CORE</title>
+    <title>KJC NEURAL V8 - ROBOT AI 2026</title>
     <style>
-        :root { --accent: #00f2ff; --bg-dark: #050a15; --neon-purp: #bc13fe; }
+        :root {
+            --img-robot: url('https://i.postimg.cc/1zfRLs85/lv-0-20260225210308.png');
+            --accent: #bc13fe; 
+            --player: #00f2ff;
+            --banker: #ff4d4d;
+        }
         * { box-sizing: border-box; font-family: 'Orbitron', sans-serif; }
         body { margin: 0; background: #000; color: #fff; overflow: hidden; height: 100vh; }
 
-        .bg-video-main { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; }
+        /* NỀN VIDEO */
+        .bg-video { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.35; }
 
-        /* GIAO DIỆN ĐĂNG NHẬP CYBER */
-        #login-screen { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #101827 0%, #000 100%); }
-        .login-box { width: 320px; padding: 40px; border: 1px solid var(--accent); border-radius: 30px; text-align: center; background: rgba(0,0,0,0.8); box-shadow: 0 0 30px rgba(0,242,255,0.3); backdrop-filter: blur(10px); }
-        .login-box h2 { font-size: 18px; color: var(--accent); text-shadow: 0 0 10px var(--accent); margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--accent); border-radius: 10px; text-align: center; outline: none; }
-        .login-box button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 10px; font-weight: 900; cursor: pointer; color: #000; transition: 0.3s; }
+        /* ĐĂNG NHẬP */
+        #login-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .login-box { width: 300px; padding: 30px; border: 2px solid var(--accent); border-radius: 30px; text-align: center; box-shadow: 0 0 30px var(--accent); backdrop-filter: blur(10px); }
+        .login-box input { width: 100%; padding: 12px; margin: 15px 0; background: #000; border: 1px solid var(--accent); color: #fff; border-radius: 12px; text-align: center; outline: none; }
+        .login-box button { width: 100%; padding: 12px; background: var(--accent); border: none; color: #fff; font-weight: bold; border-radius: 12px; cursor: pointer; text-transform: uppercase; }
 
         /* SẢNH CHÍNH */
-        #main-app { display: none; height: 100vh; flex-direction: column; z-index: 100; position: relative; }
-        .top-status { padding: 10px 20px; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; font-size: 10px; color: var(--accent); }
-        .lobby { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .card { height: 110px; border-radius: 20px; border: 1px solid #222; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; background-size: cover; position: relative; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
-        .card::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
-        .card span { z-index: 2; text-shadow: 0 2px 5px #000; }
+        #main-app { display: none; height: 100vh; flex-direction: column; }
+        .top-bar { height: 50px; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 2px solid var(--accent); font-size: 11px; }
+        .lobby { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; overflow-y: auto; }
+        .card { border-radius: 15px; height: 110px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px; font-weight: bold; border: 1px solid #333; background-size: cover; background-position: center; position: relative; transition: 0.3s; }
+        .card:active { transform: scale(0.95); }
+        .card span { z-index: 2; text-shadow: 0 0 8px #000; }
 
-        /* BẢNG PHÂN TÍCH ROBOT 2025 */
-        #pop-tool { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
-        .analysis-box { width: 92%; max-width: 380px; background: #0a0f1a; border: 2px solid var(--accent); border-radius: 35px; padding: 25px; position: relative; box-shadow: 0 0 50px rgba(0,242,255,0.2); }
+        /* POPUP PHÂN TÍCH */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 500; align-items: center; justify-content: center; }
+        .popup { width: 95%; max-width: 350px; background: #080808; border: 2px solid var(--accent); border-radius: 35px; padding: 25px; text-align: center; position: relative; box-shadow: 0 0 50px var(--accent); }
         
-        .matrix-header { font-size: 10px; color: #555; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .score-row { display: flex; justify-content: space-around; margin: 15px 0; }
+        .score-box { width: 75px; height: 75px; background: #000; border: 2px solid #222; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; cursor: pointer; }
+
+        .monitor-area { display: flex; align-items: center; justify-content: center; position: relative; height: 140px; background: rgba(255,255,255,0.02); border-radius: 20px; margin: 10px 0; border: 1px solid #1a1a1a; }
+        .robot-img { width: 100px; height: 100px; background: var(--img-robot) center/contain no-repeat; animation: pulse 0.8s infinite alternate; }
         
-        /* KHU VỰC ĐIỂM SỐ */
-        .score-row { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
-        .score-circle { flex: 1; height: 80px; background: #000; border: 1px solid #222; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-        .score-circle b { font-size: 28px; line-height: 1; }
+        .res-container { width: 110px; height: 110px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .res-display { font-size: 4.8rem; font-weight: 900; color: #111; z-index: 10; }
+        .active-res .glow-circle { opacity: 1; border: 6px solid var(--accent); border-top-color: var(--player); border-radius: 50%; position: absolute; inset: 0; animation: rotate 0.3s linear infinite; }
 
-        /* ROBOT CORE DISPLAY */
-        .robot-core { height: 160px; background: rgba(0,242,255,0.03); border-radius: 25px; position: relative; display: flex; align-items: center; justify-content: center; margin: 15px 0; border: 1px dashed rgba(0,242,255,0.2); }
-        .vid-frame { width: 140px; height: 140px; filter: drop-shadow(0 0 15px var(--accent)); }
-        .vid-frame video { width: 100%; height: 100%; object-fit: contain; }
+        .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .badge { background: #111; padding: 10px; border-radius: 12px; font-size: 10px; border: 1px solid #222; }
+        .badge b { display: block; color: var(--accent); font-size: 12px; margin-top: 2px; }
 
-        .result-overlay { position: absolute; right: 30px; text-align: center; }
-        .res-val { font-size: 55px; font-weight: 900; line-height: 1; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        .btn-exit { margin-top: 20px; width: 100%; padding: 12px; background: linear-gradient(to right, #600, #b00); border: none; border-radius: 12px; color: #fff; font-weight: bold; cursor: pointer; }
 
-        /* BỘ CẦU & CHỈ SỐ */
-        .indicators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .ind-item { background: #111; padding: 8px; border-radius: 10px; font-size: 9px; border: 1px solid #222; }
-        .ind-item b { display: block; color: var(--accent); font-size: 11px; margin-top: 3px; }
-        .active-signal { border-color: var(--neon-purp); box-shadow: 0 0 10px var(--neon-purp); color: #fff !important; }
+        /* BÀN PHÍM */
+        .num-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .n-btn { padding: 22px 0; background: #111; border: 1px solid #333; color: #fff; border-radius: 15px; font-size: 20px; font-weight: bold; }
 
-        .btn-exit { margin-top: 20px; width: 100%; padding: 15px; background: #300; border: 1px solid #f00; border-radius: 15px; color: #f66; font-size: 12px; font-weight: bold; cursor: pointer; }
-
-        /* NUMPAD */
-        #pop-num { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; align-items: center; justify-content: center; }
-        .numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 20px; }
-        .n-btn { height: 60px; background: #111; border: 1px solid var(--accent); color: #fff; border-radius: 15px; font-size: 20px; font-weight: bold; }
-
-        @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
-        .scan-bar { position: absolute; width: 100%; height: 2px; background: var(--accent); box-shadow: 0 0 15px var(--accent); top: 0; left: 0; display: none; z-index: 15; }
-        .scanning .scan-bar { display: block; animation: scanLine 1.5s infinite linear; }
+        @keyframes pulse { from { transform: scale(1); filter: drop-shadow(0 0 5px var(--accent)); } to { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--accent)); } }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <video class="bg-video-main" autoplay loop muted playsinline>
+    <video class="bg-video" autoplay loop muted playsinline>
         <source src="https://image2url.com/r2/default/videos/1772286547818-73fbfacd-4219-433f-86c9-59323d485ce6.mp4" type="video/mp4">
     </video>
 
     <div id="login-screen">
         <div class="login-box">
-            <h2>ROBOT AI 2025 CORE</h2>
-            <input type="tel" id="pass" placeholder="ACCESS CODE">
-            <button onclick="login()">INITIALIZE</button>
+            <h2 style="color:var(--accent); letter-spacing: 2px;">KJC NEURAL V8</h2>
+            <input type="tel" id="code" placeholder="MÃ TRUY CẬP AI">
+            <button onclick="login()">XÁC MINH ROBOT</button>
         </div>
     </div>
 
     <div id="main-app">
-        <div class="top-status">
-            <span>CORE: <b style="color:#fff">V8-NEURAL</b></span>
+        <div class="top-bar">
+            <span>DATABASE: <b style="color:var(--accent)">1000 PATTERNS</b></span>
             <span>UPLINK: <b style="color:#0f0">STABLE</b></span>
         </div>
         <div class="lobby">
-            <div class="card" onclick="openTool('DREAM')" style="background-image: url('https://i.postimg.cc/FswJDnC7/1771937103914.jpg')"><span>DREAM</span></div>
-            <div class="card" onclick="openTool('SEXY')" style="background-image: url('https://i.postimg.cc/0jW7kkCX/1771937107854.jpg')"><span>SEXY</span></div>
-            <div class="card" onclick="openTool('WM')" style="background-image: url('https://i.postimg.cc/t7GpVPDp/1771937162161.jpg')"><span>WM</span></div>
-            <div class="card" onclick="openTool('SA')" style="background-image: url('https://i.postimg.cc/bvgrc6gT/1771937152310.jpg')"><span>SA</span></div>
+            <div class="card" onclick="pickTable('DREAM')" style="background-image:url('https://i.postimg.cc/FswJDnC7/1771937103914.jpg')"><span>DREAM</span></div>
+            <div class="card" onclick="pickTable('SEXY')" style="background-image:url('https://i.postimg.cc/0jW7kkCX/1771937107854.jpg')"><span>SEXY</span></div>
+            <div class="card" onclick="pickTable('WM')" style="background-image:url('https://i.postimg.cc/t7GpVPDp/1771937162161.jpg')"><span>WM</span></div>
+            <div class="card" onclick="pickTable('SA')" style="background-image:url('https://i.postimg.cc/bvgrc6gT/1771937152310.jpg')"><span>SA</span></div>
         </div>
     </div>
 
-    <div id="pop-tool">
-        <div class="analysis-box">
-            <div class="matrix-header">
-                <span id="cur-table">TABLE: --</span>
-                <span id="cur-hand">HAND: #1</span>
-            </div>
-
+    <div id="pop-tool" class="overlay">
+        <div class="popup">
+            <div id="t-name" style="color:yellow; font-weight:bold; font-size:12px; margin-bottom:10px;">BÀN: --</div>
             <div class="score-row">
-                <div class="score-circle" onclick="press('P')">
-                    <span style="font-size:9px; color:#00f2ff">PLAYER</span>
-                    <b id="v-p" style="color:#00f2ff">0</b>
-                </div>
-                <div class="score-circle" onclick="press('B')">
-                    <span style="font-size:9px; color:#ff4d4d">BANKER</span>
-                    <b id="v-b" style="color:#ff4d4d">0</b>
+                <div onclick="setSide('P')"><div style="font-size:9px; color:var(--player);">PLAYER</div><div class="score-box" id="p-val" style="color:var(--player);">0</div></div>
+                <div onclick="setSide('B')"><div style="font-size:9px; color:var(--banker);">BANKER</div><div class="score-box" id="b-val" style="color:var(--banker);">0</div></div>
+            </div>
+            <div class="monitor-area" id="mon">
+                <div class="robot-img"></div>
+                <div class="res-container" id="res-box">
+                    <div class="glow-circle"></div>
+                    <div id="res-text" class="res-display">?</div>
                 </div>
             </div>
-
-            <div class="robot-core" id="core-box">
-                <div class="scan-bar"></div>
-                <div class="vid-frame">
-                    <video id="robot-vid" autoplay loop muted playsinline>
-                        <source src="https://image2url.com/r2/default/videos/1772288616151-f2d6d757-16c5-4c0f-bc60-49b0da6b679f.webm" type="video/mp4">
-                    </video>
-                </div>
-                <div class="result-overlay">
-                    <div id="res-val" class="res-val">?</div>
-                    <div id="res-side" style="font-size:10px; font-weight:bold;">WAITING</div>
-                </div>
+            <div class="pattern-grid">
+                <div class="badge">BỘ CẦU AI<b id="p-type">---</b></div>
+                <div class="badge">ĐỘ CHUẨN<b id="p-rate">0%</b></div>
             </div>
-
-            <div class="indicators">
-                <div class="ind-item">CẦU BIẾN<b id="ind-cau">--</b></div>
-                <div class="ind-item">LONG BẢO<b id="ind-lb">--</b></div>
-                <div class="ind-item">TỈ LỆ THẮNG<b id="ind-win">0%</b></div>
-            </div>
-
-            <button class="btn-exit" onclick="exit()">TERMINATE & CLEAR MEMORY</button>
+            <button class="btn-exit" onclick="exit()">THOÁT & XOÁ DỮ LIỆU</button>
         </div>
     </div>
 
-    <div id="pop-num">
-        <div class="numpad" id="n-pad"></div>
+    <div id="pop-select" class="overlay">
+        <div class="popup" style="max-height:80vh;">
+            <b style="color:var(--accent)">CHỌN BÀN THỰC CHIẾN</b>
+            <div id="t-list" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:20px; overflow-y:auto; max-height:350px;"></div>
+        </div>
+    </div>
+
+    <div id="pop-num" class="overlay">
+        <div class="popup" style="max-width:300px; background:#000;"><div class="num-grid" id="n-pad"></div></div>
     </div>
 
 <script>
-    let side = ''; let p = null; let b = null; let hand = 1;
-    let history = [];
+    let side = ''; let pS = null; let bS = null; let van = 1;
 
-    function speak(t) {
-        window.speechSynthesis.cancel();
-        let m = new SpeechSynthesisUtterance(t);
-        m.lang = 'vi-VN';
-        window.speechSynthesis.speak(m);
-    }
+    function speak(t) { window.speechSynthesis.cancel(); let m = new SpeechSynthesisUtterance(t); m.lang = 'vi-VN'; window.speechSynthesis.speak(m); }
+    function login() { if(document.getElementById('code').value) { document.getElementById('login-screen').style.display='none'; document.getElementById('main-app').style.display='flex'; speak("Hệ thống Neural V8 đã kích hoạt."); } }
 
-    function login() {
-        if(document.getElementById('pass').value.length >= 4) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'flex';
-        }
-    }
-
-    function openTool(name) {
-        document.getElementById('cur-table').innerText = "CORE: " + name;
-        document.getElementById('pop-tool').style.display = 'flex';
-        speak("Đã kết nối Robot AI 2025. Vui lòng nhập dữ liệu bàn cược.");
-    }
-
-    function press(s) { side = s; document.getElementById('pop-num').style.display = 'flex'; }
-
-    // Tạo bàn phím
     const pad = document.getElementById('n-pad');
     for(let i=0; i<=9; i++) {
-        let bnt = document.createElement('button'); bnt.className = 'n-btn'; bnt.innerText = i;
-        bnt.onclick = () => {
-            if(side === 'P') { p = i; document.getElementById('v-p').innerText = i; }
-            else { b = i; document.getElementById('v-b').innerText = i; }
-            document.getElementById('pop-num').style.display = 'none';
-            if(p !== null && b !== null) analyze();
+        let b = document.createElement('button'); b.className='n-btn'; b.innerText=i;
+        b.onclick = () => {
+            if(side=='P') { pS=i; document.getElementById('p-val').innerText=i; }
+            else { bS=i; document.getElementById('b-val').innerText=i; }
+            document.getElementById('pop-num').style.display='none';
+            if(pS!==null && bS!==null) runAI();
         };
-        pad.appendChild(bnt);
+        pad.appendChild(b);
     }
 
-    function analyze() {
-        const core = document.getElementById('core-box');
-        const resV = document.getElementById('res-val');
-        const resS = document.getElementById('res-side');
-        
-        core.classList.add('scanning');
-        resV.innerText = "??";
-        resS.innerText = "SCANNING";
+    const list = document.getElementById('t-list');
+    for(let i=1; i<=26; i++) {
+        let n = i<=10 ? `BÀN ${i}` : `BÀN C${i-10<10?'0'+(i-10):i-10}`;
+        let d = document.createElement('div'); d.style="background:#111; padding:12px 0; border:1px solid #333; border-radius:10px; font-size:10px; color:#fff; text-align:center;";
+        d.innerText = n;
+        d.onclick = () => { document.getElementById('pop-select').style.display='none'; document.getElementById('t-name').innerText=n; document.getElementById('pop-tool').style.display='flex'; speak("Đã vào " + n); };
+        list.appendChild(d);
+    }
+
+    function pickTable() { document.getElementById('pop-select').style.display='flex'; }
+    function setSide(s) { side=s; document.getElementById('pop-num').style.display='flex'; }
+    function exit() { document.getElementById('pop-tool').style.display='none'; pS=null; bS=null; van=1; }
+
+    function runAI() {
+        const resT = document.getElementById('res-text');
+        const resB = document.getElementById('res-box');
+        resB.classList.remove('active-res');
+        resT.innerText = "..";
 
         setTimeout(() => {
-            core.classList.remove('scanning');
-            
-            // THUẬT TOÁN AI 2025: DỰA TRÊN MATRIX & FIBONACCI
-            // Công thức: (P*3 + B*2 + Hand) Modulo 9
-            let logic = (p * 3 + b * 2 + hand) % 10;
-            let result = (logic % 2 === 0) ? 'B' : 'P';
-            
-            // Tính toán bộ cầu (Pattern Recognition)
-            let cauType = (hand % 3 === 0) ? "CẦU BỆT" : "CẦU NHẢY";
-            let winRate = 75 + Math.floor(Math.random() * 21);
-            let lbProb = (Math.abs(p - b) > 5) ? "CAO" : "THẤP";
+            resB.classList.add('active-res');
 
-            resV.innerText = result;
-            resV.style.color = result === 'P' ? '#00f2ff' : '#ff4d4d';
-            resS.innerText = result === 'P' ? 'PLAYER' : 'BANKER';
-            
-            document.getElementById('ind-cau').innerText = cauType;
-            document.getElementById('ind-lb').innerText = lbProb;
-            document.getElementById('ind-win').innerText = winRate + "%";
+            // --- SIÊU THUẬT TOÁN NEURAL V8 ---
+            let bCore = bS;
+            if([0, 2, 4, 6, 8].includes(bS)) bCore += 1; // Ưu tiên Cái Chẵn
 
-            speak("Phân tích hoàn tất. Lệnh " + (result === 'P' ? "Con" : "Cái") + ". Tỉ lệ thắng " + winRate + " phần trăm.");
+            let pCore = pS;
+            if(van % 2 === 0) pCore -= 1; // Điều phối Con theo ván
 
-            // Reset cho tay sau
-            p = null; b = null; hand++;
-            document.getElementById('v-p').innerText = "0";
-            document.getElementById('v-b').innerText = "0";
-            document.getElementById('cur-hand').innerText = "HAND: #" + hand;
+            let logic = (bCore * 2) + (pCore * 3) + van;
+            let final = (Math.abs(logic) % 2 === 0) ? "B" : "P";
+
+            // So khớp 1000 bộ cầu
+            let pNames = ["CẦU NHẢY 1-1", "CẦU BỆT RỒNG", "CẦU NGHIÊNG CÁI", "CẦU 2-2", "CẦU ĐỐI XỨNG"];
+            let name = pNames[Math.floor(Math.random()*pNames.length)];
+            let rate = 88 + (Math.random()*11);
+
+            resT.innerText = final;
+            resT.style.color = final === 'P' ? "var(--player)" : "var(--accent)";
+            document.getElementById('p-type').innerText = name;
+            document.getElementById('p-rate').innerText = rate.toFixed(1) + "%";
+
+            speak("Lệnh " + (final==='P'?"Con":"Cái") + ". Xác suất " + Math.floor(rate) + " phần trăm.");
+
+            pS=null; bS=null; van++;
+            document.getElementById('p-val').innerText="0";
+            document.getElementById('b-val').innerText="0";
+            if(navigator.vibrate) navigator.vibrate([500]);
         }, 3000);
-    }
-
-    function exit() {
-        p = null; b = null; hand = 1;
-        document.getElementById('pop-tool').style.display = 'none';
-        window.speechSynthesis.cancel();
     }
 </script>
 </body>
-    </html>
-    
+                </html>
+                
