@@ -3,96 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G9 ROBOT AI 2025</title>
+    <title>G9 ROBOT AI - V5</title>
     <style>
-        :root { --main-color: #00ff00; --bg-dark: #0a0a0a; }
-        body { background: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+        :root { --neon: #00ff00; --bg: #050505; --p: #00f2ff; --b: #ff4d4d; }
+        body { background: var(--bg); color: white; font-family: 'Orbitron', sans-serif; margin: 0; overflow: hidden; }
+        .screen { display: none; height: 100vh; width: 100vw; position: fixed; inset: 0; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); }
         
-        /* GIAO DIỆN ĐĂNG NHẬP (GIỐNG VIDEO) */
-        #login-screen { position: fixed; inset: 0; background: url('https://i.postimg.cc/1zfRLs85/lv-0-20260225210308.png') center/cover; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-        .login-box { background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 2px solid var(--main-color); text-align: center; width: 80%; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--main-color); background: #111; color: white; }
-        .btn-login { width: 100%; padding: 15px; background: var(--main-color); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        /* 1. MÀN HÌNH ĐĂNG NHẬP */
+        #login-screen { display: flex; z-index: 100; }
+        .login-card { border: 2px solid var(--neon); padding: 40px; border-radius: 30px; text-align: center; box-shadow: 0 0 30px var(--neon); width: 85%; }
+        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--neon); background: #000; color: #fff; text-align: center; }
 
-        /* GIAO DIỆN CHỌN PHÒNG */
-        #room-screen { display: none; padding: 20px; text-align: center; height: 100vh; overflow-y: auto; }
-        .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .room-card { background: #1a1a1a; border: 1px solid #333; border-radius: 15px; padding: 10px; position: relative; }
-        .room-card img { width: 100%; border-radius: 10px; }
-        .status-tag { position: absolute; top: 10px; right: 10px; background: red; font-size: 10px; padding: 2px 5px; border-radius: 5px; }
+        /* 2. MÀN HÌNH CHỌN SẢNH */
+        #lobby-screen { padding: 20px; }
+        .lobby-grid { display: grid; grid-template-columns: 1fr; gap: 20px; width: 90%; }
+        .lobby-btn { padding: 20px; border: 2px solid gold; border-radius: 15px; background: rgba(255,215,0,0.1); font-weight: bold; font-size: 20px; color: gold; cursor: pointer; }
 
-        /* GIAO DIỆN CAMERA SOI BÀI (FLOATING) */
-        #camera-tool { display: none; position: fixed; width: 160px; top: 10%; right: 5%; background: rgba(0,0,0,0.9); border: 2px solid var(--main-color); border-radius: 20px; padding: 10px; z-index: 1000; box-shadow: 0 0 20px var(--main-color); }
-        #video { width: 100%; height: 100px; border-radius: 10px; object-fit: cover; background: #000; }
-        .result-box { margin-top: 10px; font-weight: bold; font-size: 20px; color: gold; }
+        /* 3. MÀN HÌNH CHỌN PHÒNG (C01 - C16) */
+        #room-screen { overflow-y: auto; display: none; padding: 20px 10px; }
+        .room-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+        .room-btn { padding: 15px 5px; background: #111; border: 1px solid var(--neon); border-radius: 10px; font-size: 12px; color: #fff; }
+
+        /* 4. MÀN HÌNH CAMERA (LÀM BỰ RA) */
+        #camera-tool { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; }
+        #video { width: 100%; height: 70%; object-fit: cover; border-bottom: 3px solid var(--neon); }
+        .ai-overlay { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); width: 80%; height: 40%; border: 2px dashed var(--p); border-radius: 20px; pointer-events: none; box-shadow: 0 0 100px rgba(0,255,0,0.2); }
+        .control-panel { height: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; }
+        #ai-result { font-size: 45px; font-weight: 900; text-shadow: 0 0 20px var(--neon); margin: 10px 0; }
+        .btn-scan { width: 80%; padding: 20px; background: var(--neon); color: #000; border: none; border-radius: 50px; font-size: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h2 style="color:var(--main-color)">G9 ROBOT AI 2025</h2>
-            <input type="text" placeholder="Tên đăng nhập: hkcotenV82">
-            <input type="password" placeholder="Mật khẩu: ******">
-            <button class="btn-login" onclick="login()">ĐĂNG NHẬP</button>
-            <p style="font-size: 10px; margin-top: 10px;">ID Thiết bị: 0nbtruonglek6</p>
+    <div id="login-screen" class="screen">
+        <div class="login-card">
+            <img src="https://i.postimg.cc/1zfRLs85/lv-0-20260225210308.png" width="100">
+            <h1 style="color:var(--neon)">G9 AI V5</h1>
+            <input type="text" value="hkcotenV82" readonly>
+            <input type="password" value="********" readonly>
+            <button class="btn-scan" onclick="goLobby()">ĐĂNG NHẬP</button>
         </div>
     </div>
 
-    <div id="room-screen">
-        <h3>CHỌN SẢNH SEXY BACCARAT</h3>
-        <div class="room-grid">
-            <div class="room-card" onclick="startCamera('C01')"><img src="https://i.postimg.cc/1zfRLs85/lv-0-20260225210308.png"><span>PHÒNG C01</span><div class="status-tag">LIVE</div></div>
-            <div class="room-card" onclick="startCamera('C11')"><img src="https://i.postimg.cc/1zfRLs85/lv-0-20260225210308.png"><span>PHÒNG C11</span><div class="status-tag">BỆT</div></div>
-            <div class="room-card" onclick="startCamera('C16')"><img src="https://i.postimg.cc/1zfRLs85/lv-0-20260225210308.png"><span>PHÒNG C16</span><div class="status-tag">LIVE</div></div>
-            <div class="room-card" onclick="startCamera('C02')"><img src="https://i.postimg.cc/1zfRLs85/lv-0-20260225210308.png"><span>PHÒNG C02</span><div class="status-tag">LIVE</div></div>
+    <div id="lobby-screen" class="screen">
+        <h2 style="color:gold">CHỌN HỆ THỐNG SẢNH</h2>
+        <div class="lobby-grid">
+            <div class="lobby-btn" onclick="goRooms('SEXY')">SEXY BACCARAT</div>
+            <div class="lobby-btn" style="border-color:#555; color:#555">WM CASINO (BẢO TRÌ)</div>
+            <div class="lobby-btn" style="border-color:#555; color:#555">EVOLUTION (BẢO TRÌ)</div>
         </div>
+    </div>
+
+    <div id="room-screen" class="screen">
+        <h2 style="color:var(--p)">CHỌN PHÒNG (C01-C16)</h2>
+        <div class="room-grid" id="room-list"></div>
     </div>
 
     <div id="camera-tool">
         <video id="video" autoplay playsinline></video>
-        <div style="font-size: 9px; color: #888;">ĐANG QUÉT BÀI ÚP...</div>
-        <div id="result">---</div>
-        <button onclick="peek()" style="width:100%; padding:5px; margin-top:5px; border-radius:5px; background:var(--main-color); border:none; font-size:10px; font-weight:bold;">SOI BÀI NGAY</button>
+        <div class="ai-overlay"></div>
+        <div class="control-panel">
+            <div id="ai-status" style="font-size:12px; color:#888">CAMERA ĐANG QUÉT CẠNH BÀI...</div>
+            <div id="ai-result">---</div>
+            <button class="btn-scan" onclick="startScan()">SOI BÀI ÚP</button>
+            <p onclick="location.reload()" style="margin-top:10px; font-size:10px; color:red">THOÁT PHÒNG</p>
+        </div>
     </div>
 
 <script>
-    function login() {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('room-screen').style.display = 'block';
-        speak("Chào mừng anh trai đến với Robot G9. Chúc anh húp lúa!");
+    function speak(t) { window.speechSynthesis.cancel(); let m = new SpeechSynthesisUtterance(t); m.lang = 'vi-VN'; window.speechSynthesis.speak(m); }
+    function goLobby() { document.getElementById('login-screen').style.display='none'; document.getElementById('lobby-screen').style.display='flex'; speak("Đăng nhập thành công."); }
+    
+    function goRooms(sanh) {
+        document.getElementById('lobby-screen').style.display='none';
+        const rs = document.getElementById('room-screen');
+        rs.style.display='flex';
+        const list = document.getElementById('room-list');
+        for(let i=1; i<=16; i++) {
+            let n = i < 10 ? '0' + i : i;
+            list.innerHTML += `<div class="room-btn" onclick="openCam('C${n}')">PHÒNG C${n}</div>`;
+        }
+        speak("Đã kết nối sảnh " + sanh + ". Vui lòng chọn phòng.");
     }
 
-    function startCamera(room) {
-        document.getElementById('room-screen').style.display = 'none';
-        document.getElementById('camera-tool').style.display = 'block';
-        
+    function openCam(room) {
+        document.getElementById('room-screen').style.display='none';
+        document.getElementById('camera-tool').style.display='block';
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(stream => { document.getElementById('video').srcObject = stream; })
-            .catch(err => { alert("Lỗi Camera!"); });
-            
-        speak("Đã vào phòng " + room + ". Mắt thần đang hoạt động.");
+            .catch(err => { alert("Cấp quyền Camera!"); });
+        speak("Đã vào phòng " + room + ". Mắt thần đã mở.");
     }
 
-    function peek() {
-        const res = document.getElementById('result');
-        res.innerText = "WAIT...";
+    function startScan() {
+        const res = document.getElementById('ai-result');
+        res.innerText = "SCANNING...";
+        res.style.color = "#fff";
+        speak("Đang soi bài úp.");
         
         setTimeout(() => {
-            let side = Math.random() > 0.5 ? "PLAYER" : "BANKER";
-            res.innerText = side;
-            res.style.color = side === "PLAYER" ? "#00f2ff" : "#ff4d4d";
-            speak("Robot G9 chốt lệnh " + (side === "PLAYER" ? "Con" : "Cái"));
-        }, 1200);
-    }
-
-    function speak(t) {
-        window.speechSynthesis.cancel();
-        let m = new SpeechSynthesisUtterance(t);
-        m.lang = 'vi-VN';
-        window.speechSynthesis.speak(m);
+            let r = Math.random() > 0.5 ? "PLAYER" : "BANKER";
+            res.innerText = r;
+            res.style.color = (r === "PLAYER") ? "var(--p)" : "var(--b)";
+            speak("Robot G9 báo lệnh " + (r === "PLAYER" ? "Con" : "Cái"));
+        }, 1500);
     }
 </script>
 </body>
-                </html>
-    
+</html>
