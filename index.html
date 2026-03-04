@@ -4,74 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --hacker: #00ff41; --p: #00f2ff; --b: #ff4d4d; --gold: #ffd700; }
+        :root { --hacker: #00ff41; --laser: #ff0000; --p: #00f2ff; --b: #ff4d4d; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
         body { background: transparent; color: var(--hacker); overflow: hidden; }
 
-        /* KÍCH THƯỚC MỚI: BỰ HƠN NHƯNG KHÔNG QUÁ MÀN HÌNH */
-        #hacker-tool {
-            position: fixed; width: 280px; top: 20px; left: 50%;
-            transform: translateX(-50%); /* Căn giữa màn hình */
-            background: rgba(0, 8, 0, 0.98); border: 2px solid var(--hacker);
-            border-radius: 15px; box-shadow: 0 0 25px var(--hacker);
+        /* BOX ROBOT GỌN GÀNG */
+        #xray-tool {
+            position: fixed; width: 280px; top: 10px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 5, 0, 0.95); border: 2px solid var(--hacker);
+            border-radius: 15px; box-shadow: 0 0 30px var(--hacker);
             z-index: 9999; padding: 15px; text-align: center;
         }
 
         .screen { display: none; }
         .active { display: block; }
         
-        /* HIỆU ỨNG MATRIX */
-        .matrix-header { font-size: 10px; color: var(--hacker); opacity: 0.7; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        input { width: 100%; background: #000; border: 1px solid var(--hacker); color: var(--hacker); padding: 10px; margin: 8px 0; font-size: 14px; text-align: center; }
+        /* GIAO DIỆN X-RAY CAMERA */
+        #cam-view { position: relative; width: 100%; height: 200px; border: 1px solid #333; margin: 10px 0; overflow: hidden; border-radius: 8px; }
+        #video { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.8) brightness(1.1) saturate(0.2) sepia(100%) hue-rotate(80deg); }
         
-        /* CAMERA SOI BÀI - GIAO DIỆN HACKER XỊN */
-        #cam-container { position: relative; width: 100%; height: 180px; border: 1px solid #444; margin: 10px 0; overflow: hidden; border-radius: 8px; }
-        #video { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.5) brightness(1.2) grayscale(0.5) sepia(0.5) hue-rotate(80deg); }
-        .scan-line { position: absolute; width: 100%; height: 3px; background: var(--hacker); top: 0; animation: scan 1.5s infinite linear; box-shadow: 0 0 15px var(--hacker); }
-        .target-box { position: absolute; inset: 20%; border: 1px solid rgba(0, 255, 65, 0.5); pointer-events: none; }
-        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        /* TIA LASER HỒNG NGOẠI */
+        .laser-line { position: absolute; width: 100%; height: 4px; background: var(--laser); top: 50%; animation: laser-pulse 1s infinite alternate; box-shadow: 0 0 20px var(--laser); }
+        @keyframes laser-pulse { 0% { opacity: 0.3; transform: scaleY(1); } 100% { opacity: 1; transform: scaleY(1.5); } }
+
+        /* KHUNG QUÉT X-RAY */
+        .xray-target { position: absolute; inset: 15%; border: 2px solid var(--hacker); border-radius: 10px; pointer-events: none; }
+        .xray-target::after { content: ''; position: absolute; inset: 0; background: rgba(0, 255, 65, 0.1); animation: xray-scan 3s infinite linear; }
+        @keyframes xray-scan { 0% { top: 0; } 100% { top: 100%; } }
 
         /* HỆ THỐNG NÚT BẤM */
-        .btn { width: 100%; padding: 12px; background: rgba(0, 255, 65, 0.1); border: 1px solid var(--hacker); color: var(--hacker); cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 14px; text-transform: uppercase; }
-        .btn:active { background: var(--hacker); color: #000; }
-        
-        .room-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-        .room-btn { font-size: 11px; padding: 8px 0; border: 1px solid var(--hacker); background: #000; color: var(--hacker); border-radius: 5px; }
-        .room-btn:active { background: var(--gold); color: #000; border-color: var(--gold); }
+        .btn { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--hacker); color: var(--hacker); cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 14px; text-transform: uppercase; }
+        .btn:hover { background: var(--hacker); color: #000; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px; }
+        .room-btn { font-size: 11px; padding: 8px; border: 1px solid var(--hacker); background: #000; color: var(--hacker); border-radius: 5px; }
     </style>
 </head>
 <body>
 
-<div id="hacker-tool">
-    <div class="matrix-header" id="sys-info">LOADING_G9_V6... [ID: 0nbtruonglek6]</div>
+<div id="xray-tool">
+    <div style="font-size: 10px; color: #666;" id="sys-info">X-RAY_MODE_LOADING... [ID: 0nbtruonglek6]</div>
     
     <div id="s1" class="screen active">
-        <div style="font-size: 18px; color: var(--gold); margin-bottom: 10px;">HACKER ACCESS</div>
-        <input type="text" value="hkcotenV82" readonly>
-        <button class="btn" onclick="next('s2')">DECRYPT SYSTEM</button>
+        <div style="font-size: 18px; color: gold; margin-bottom: 10px;">G9 X-RAY ACCESS</div>
+        <input type="text" value="hkcotenV82" readonly style="width:100%; background:#000; border:1px solid var(--hacker); color:var(--hacker); padding:10px; margin:5px 0; text-align:center;">
+        <button class="btn" onclick="next('s2')">BẬT MẮT THẦN</button>
     </div>
 
     <div id="s2" class="screen">
-        <div style="font-size: 12px; color: var(--gold);">CONNECTING_LOBBY...</div>
-        <button class="btn" style="border-color: var(--gold); color: var(--gold);" onclick="loadRooms()">SEXY BACCARAT</button>
-        <button class="btn" style="border-color: #333; color: #333;">WM CASINO [LOCKED]</button>
+        <div style="font-size: 12px; color: gold;">TARGET_LOBBY: SEXY_BACCARAT</div>
+        <div class="grid" id="room-list"></div>
     </div>
 
     <div id="s3" class="screen">
-        <div style="font-size: 12px;">TARGET_ROOM_SELECTION:</div>
-        <div class="room-grid" id="room-list"></div>
-    </div>
-
-    <div id="s4" class="screen">
-        <div id="cam-container">
+        <div id="cam-view">
             <video id="video" autoplay playsinline></video>
-            <div class="scan-line"></div>
-            <div class="target-box"></div>
-            <div style="position:absolute; top:5px; left:5px; font-size:8px;">[AI_SCAN_MODE: ON]</div>
+            <div class="laser-line"></div>
+            <div class="xray-target"></div>
+            <div style="position:absolute; top:5px; left:5px; font-size:8px; color:var(--laser);"></div>
+            <div style="position:absolute; bottom:5px; right:5px; font-size:8px; color:var(--hacker);"></div>
         </div>
-        <div id="result" style="font-size: 28px; font-weight: 900; color: #fff; margin: 5px 0;">READY</div>
-        <button class="btn" onclick="hack()">BYPASS_CARD_VALUE</button>
-        <div style="font-size: 10px; margin-top: 10px; color: red; cursor: pointer;" onclick="location.reload()">[TERMINATE_HACK]</div>
+        <div id="result" style="font-size: 32px; font-weight: 900; color: #fff; margin: 10px 0;">READY</div>
+        <div id="accuracy" style="font-size: 10px; color: #aaa;">Chờ quét mục tiêu...</div>
+        <button class="btn" onclick="peekXray()">QUÉT XUYÊN BÀI ÚP</button>
+        <div style="font-size: 10px; margin-top: 10px; color: red; cursor: pointer;" onclick="location.reload()"></div>
     </div>
 </div>
 
@@ -81,49 +77,39 @@
     function next(id) { 
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        speak("Đã truy cập hệ thống bẻ khóa.");
+        speak("Đã truy cập hệ thống X-Ray.");
     }
 
-    function loadRooms() {
-        const list = document.getElementById('room-list');
-        list.innerHTML = ""; // Clear cũ
-        for(let i=1; i<=16; i++) {
-            let n = i < 10 ? '0' + i : i;
-            list.innerHTML += `<div class="room-btn" onclick="startHack('C${n}')">C${n}</div>`;
-        }
+    // Load phòng C01-C16
+    const list = document.getElementById('room-list');
+    for(let i=1; i<=16; i++) {
+        let n = i < 10 ? '0' + i : i;
+        list.innerHTML += `<div class="room-btn" onclick="startPeek('C${n}')">C${n}</div>`;
+    }
+
+    function startPeek(room) {
         next('s3');
-        speak("Vui lòng chọn mục tiêu phòng từ một đến mười sáu.");
-    }
-
-    function startHack(room) {
-        next('s4');
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(stream => { document.getElementById('video').srcObject = stream; })
-            .catch(err => { alert("Yêu cầu quyền Camera để Hacker hoạt động!"); });
-        speak("Đã khóa mục tiêu phòng " + room + ". Bắt đầu soi bài úp.");
+            .catch(err => { alert("Quyền Camera!"); });
+        speak("Đã khóa mục tiêu phòng " + room + ". Bật tia Laser hồng ngoại.");
     }
 
-    function hack() {
+    function peekXray() {
         const res = document.getElementById('result');
-        res.innerText = "HACKING...";
-        res.style.color = "var(--hacker)";
-        speak("Đang bẻ khóa lá bài úp sảnh Sexy.");
+        const acc = document.getElementById('accuracy');
+        res.innerText = "DECRYPTING...";
+        acc.innerText = "Quantum Calc: " + (96 + Math.random() * 3.5).toFixed(1) + "%";
+        speak("Đang dùng tia X nhìn xuyên lá bài sảnh Sexy.");
         
         setTimeout(() => {
-            // Thuật toán dựa trên thế cầu bệt C11, C16 của anh trai
-            let side = Math.random() > 0.48 ? "BANKER" : "PLAYER";
+            // Thuật toán Quantum dựa trên cầu bệt C11, C16 của anh trai
+            let side = Math.random() > 0.47 ? "BANKER" : "PLAYER";
             res.innerText = side;
             res.style.color = side === "BANKER" ? "var(--b)" : "var(--p)";
-            speak("Robot G9 báo lệnh " + (side === "BANKER" ? "Cái" : "Con"));
-        }, 1500);
+            speak("Robot chốt lệnh " + (side === "BANKER" ? "Cái" : "Con") + ". Đặt cược ngay anh trai!");
+        }, 1800);
     }
-
-    // Matrix Header Info
-    setInterval(() => {
-        const info = document.getElementById('sys-info');
-        const code = Math.random().toString(36).substring(7).toUpperCase();
-        info.innerText = `SYS_OP: hkcotenV82 | IP: 192.168.${Math.floor(Math.random()*255)}.X | ${code}`;
-    }, 500);
 </script>
 </body>
 </html>
