@@ -4,56 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --hacker: #00ff41; --p: #00f2ff; --b: #ff4d4d; }
+        :root { --hacker: #00ff41; --p: #00f2ff; --b: #ff4d4d; --gold: #ffd700; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', monospace; }
         body { background: transparent; color: var(--hacker); overflow: hidden; }
 
-        /* GIAO DIỆN NHỎ GỌN (FLOATING BOX) */
+        /* KÍCH THƯỚC MỚI: BỰ HƠN NHƯNG KHÔNG QUÁ MÀN HÌNH */
         #hacker-tool {
-            position: fixed; width: 220px; top: 50px; left: 10px;
-            background: rgba(0, 10, 0, 0.95); border: 1px solid var(--hacker);
-            border-radius: 10px; box-shadow: 0 0 15px var(--hacker);
-            z-index: 9999; padding: 10px; text-align: center;
+            position: fixed; width: 280px; top: 20px; left: 50%;
+            transform: translateX(-50%); /* Căn giữa màn hình */
+            background: rgba(0, 8, 0, 0.98); border: 2px solid var(--hacker);
+            border-radius: 15px; box-shadow: 0 0 25px var(--hacker);
+            z-index: 9999; padding: 15px; text-align: center;
         }
 
         .screen { display: none; }
         .active { display: block; }
         
-        /* HIỆU ỨNG CHỮ CHẠY */
-        .matrix-text { font-size: 8px; color: var(--hacker); opacity: 0.5; height: 15px; overflow: hidden; }
-        input { width: 100%; background: #000; border: 1px solid var(--hacker); color: var(--hacker); padding: 5px; margin: 5px 0; font-size: 12px; }
+        /* HIỆU ỨNG MATRIX */
+        .matrix-header { font-size: 10px; color: var(--hacker); opacity: 0.7; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        input { width: 100%; background: #000; border: 1px solid var(--hacker); color: var(--hacker); padding: 10px; margin: 8px 0; font-size: 14px; text-align: center; }
         
-        /* CAMERA SOI BÀI KIỂU HACKER */
-        #cam-container { position: relative; width: 100%; height: 130px; border: 1px solid #333; margin: 10px 0; overflow: hidden; }
-        #video { width: 100%; height: 100%; object-fit: cover; filter: sepia(100%) hue-rotate(80deg) brightness(1.2); }
-        .scan-line { position: absolute; width: 100%; height: 2px; background: var(--hacker); top: 0; animation: scan 2s infinite linear; box-shadow: 0 0 10px var(--hacker); }
+        /* CAMERA SOI BÀI - GIAO DIỆN HACKER XỊN */
+        #cam-container { position: relative; width: 100%; height: 180px; border: 1px solid #444; margin: 10px 0; overflow: hidden; border-radius: 8px; }
+        #video { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.5) brightness(1.2) grayscale(0.5) sepia(0.5) hue-rotate(80deg); }
+        .scan-line { position: absolute; width: 100%; height: 3px; background: var(--hacker); top: 0; animation: scan 1.5s infinite linear; box-shadow: 0 0 15px var(--hacker); }
+        .target-box { position: absolute; inset: 20%; border: 1px solid rgba(0, 255, 65, 0.5); pointer-events: none; }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* NÚT BẤM */
-        .btn { width: 100%; padding: 8px; background: transparent; border: 1px solid var(--hacker); color: var(--hacker); cursor: pointer; font-weight: bold; margin-top: 5px; font-size: 11px; }
-        .btn:hover { background: var(--hacker); color: #000; }
-        .room-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-        .room-btn { font-size: 9px; padding: 4px; border: 1px solid var(--hacker); background: #000; color: var(--hacker); }
+        /* HỆ THỐNG NÚT BẤM */
+        .btn { width: 100%; padding: 12px; background: rgba(0, 255, 65, 0.1); border: 1px solid var(--hacker); color: var(--hacker); cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 14px; text-transform: uppercase; }
+        .btn:active { background: var(--hacker); color: #000; }
+        
+        .room-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+        .room-btn { font-size: 11px; padding: 8px 0; border: 1px solid var(--hacker); background: #000; color: var(--hacker); border-radius: 5px; }
+        .room-btn:active { background: var(--gold); color: #000; border-color: var(--gold); }
     </style>
 </head>
 <body>
 
 <div id="hacker-tool">
-    <div class="matrix-text" id="matrix">SYSTEM_LOADING... 0nbtruonglek6</div>
+    <div class="matrix-header" id="sys-info">LOADING_G9_V6... [ID: 0nbtruonglek6]</div>
     
     <div id="s1" class="screen active">
-        <div style="font-size: 14px; margin-bottom: 5px;">HACKER G9 LOGIN</div>
+        <div style="font-size: 18px; color: var(--gold); margin-bottom: 10px;">HACKER ACCESS</div>
         <input type="text" value="hkcotenV82" readonly>
-        <button class="btn" onclick="next('s2')">DECRYPT</button>
+        <button class="btn" onclick="next('s2')">DECRYPT SYSTEM</button>
     </div>
 
     <div id="s2" class="screen">
-        <div style="font-size: 10px;">SELECT_LOBBY:</div>
-        <button class="btn" onclick="loadRooms()">SEXY_BACCARAT</button>
+        <div style="font-size: 12px; color: var(--gold);">CONNECTING_LOBBY...</div>
+        <button class="btn" style="border-color: var(--gold); color: var(--gold);" onclick="loadRooms()">SEXY BACCARAT</button>
+        <button class="btn" style="border-color: #333; color: #333;">WM CASINO [LOCKED]</button>
     </div>
 
     <div id="s3" class="screen">
-        <div style="font-size: 10px; margin-bottom: 5px;">TARGET_ROOM:</div>
+        <div style="font-size: 12px;">TARGET_ROOM_SELECTION:</div>
         <div class="room-grid" id="room-list"></div>
     </div>
 
@@ -61,56 +66,64 @@
         <div id="cam-container">
             <video id="video" autoplay playsinline></video>
             <div class="scan-line"></div>
-            <div style="position:absolute; top:5px; left:5px; font-size:8px;">[TRACKING_CARDS]</div>
+            <div class="target-box"></div>
+            <div style="position:absolute; top:5px; left:5px; font-size:8px;">[AI_SCAN_MODE: ON]</div>
         </div>
-        <div id="result" style="font-size: 20px; font-weight: bold; color: #fff;">---</div>
-        <button class="btn" onclick="hack()">HACK_CARD_VALUE</button>
-        <div style="font-size: 8px; margin-top: 5px; color: red;" onclick="location.reload()">[EXIT_SYSTEM]</div>
+        <div id="result" style="font-size: 28px; font-weight: 900; color: #fff; margin: 5px 0;">READY</div>
+        <button class="btn" onclick="hack()">BYPASS_CARD_VALUE</button>
+        <div style="font-size: 10px; margin-top: 10px; color: red; cursor: pointer;" onclick="location.reload()">[TERMINATE_HACK]</div>
     </div>
 </div>
 
 <script>
     function speak(t) { window.speechSynthesis.cancel(); let m = new SpeechSynthesisUtterance(t); m.lang = 'vi-VN'; window.speechSynthesis.speak(m); }
+    
     function next(id) { 
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        speak("Truy cập hệ thống thành công.");
+        speak("Đã truy cập hệ thống bẻ khóa.");
     }
 
     function loadRooms() {
         const list = document.getElementById('room-list');
+        list.innerHTML = ""; // Clear cũ
         for(let i=1; i<=16; i++) {
             let n = i < 10 ? '0' + i : i;
             list.innerHTML += `<div class="room-btn" onclick="startHack('C${n}')">C${n}</div>`;
         }
         next('s3');
+        speak("Vui lòng chọn mục tiêu phòng từ một đến mười sáu.");
     }
 
     function startHack(room) {
         next('s4');
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
             .then(stream => { document.getElementById('video').srcObject = stream; })
-            .catch(err => { alert("Need Camera Permission!"); });
-        speak("Đã khóa mục tiêu phòng " + room);
+            .catch(err => { alert("Yêu cầu quyền Camera để Hacker hoạt động!"); });
+        speak("Đã khóa mục tiêu phòng " + room + ". Bắt đầu soi bài úp.");
     }
 
     function hack() {
         const res = document.getElementById('result');
-        res.innerText = "BYPASSING...";
-        speak("Đang bẻ khóa lá bài úp.");
+        res.innerText = "HACKING...";
+        res.style.color = "var(--hacker)";
+        speak("Đang bẻ khóa lá bài úp sảnh Sexy.");
+        
         setTimeout(() => {
+            // Thuật toán dựa trên thế cầu bệt C11, C16 của anh trai
             let side = Math.random() > 0.48 ? "BANKER" : "PLAYER";
             res.innerText = side;
             res.style.color = side === "BANKER" ? "var(--b)" : "var(--p)";
-            speak("Robot chốt lệnh " + (side === "BANKER" ? "Cái" : "Con"));
-        }, 1200);
+            speak("Robot G9 báo lệnh " + (side === "BANKER" ? "Cái" : "Con"));
+        }, 1500);
     }
 
-    // Hiệu ứng Matrix giả
+    // Matrix Header Info
     setInterval(() => {
-        const m = document.getElementById('matrix');
-        m.innerText = Math.random().toString(36).substring(2, 15) + " G9_EYE_ENABLED";
-    }, 100);
+        const info = document.getElementById('sys-info');
+        const code = Math.random().toString(36).substring(7).toUpperCase();
+        info.innerText = `SYS_OP: hkcotenV82 | IP: 192.168.${Math.floor(Math.random()*255)}.X | ${code}`;
+    }, 500);
 </script>
 </body>
 </html>
